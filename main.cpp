@@ -98,8 +98,9 @@ void displayContainer(const Container& c){
     cout << "Khoi Luong   : " << c.gross_weight << " tan\n";
     cout << "Ma To Khai   : " << c.customs_declaration_no << "\n";
 }
-//ham duyet xem container do co trong hashmap chua
+// danh sach dang cho toi cong, add vao hang doi khi no dung va khong trung lap
 // neu chua thi add vao, con co roi thi? 
+//roi chuc nang tim kiem mc1 la sao?
 int main (){
 	unnordered_map <string, Container> containerMap;
 	
