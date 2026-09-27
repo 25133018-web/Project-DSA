@@ -14,7 +14,7 @@ struct Container{
 
 struct Vessel
 { 
-    list<Container>ContainerList; //
+    list<Container>ContainerList; 
 };
 
 //gom nhom bang dsu
@@ -24,27 +24,27 @@ class DSU{
 		unordered_map<string, vector<string>> groups;
 	public:
 		//thao tac them container vao DSU neu chua co
-		void addContainer(const string& id){// truyen vao id container
-			if (parent.find(id) == parent.end()){
-				parent[id] = id;
-				groups[id] = {id};
+		void addContainer(const string& ContainerID){// truyen vao id container
+			if (parent.find(ContainerID) == parent.end()){
+				parent[ContainerID] = ContainerID;
+				groups[ContainerID] = {ContainerID};
 			}
 		}
 		
 		//thao tac find 
-		string find(string id){
-			if(parent[id] == id) return id;
-			return parent[id] = find(parent[id]);
+		string find(string ContainerID){
+			if(parent[ContainerID] == ContainerID) return ContainerID;
+			return parent[ContainerID] = find(parent[ContainerID]);
 		}
 		
 		// thao tac union: gop 2 container vao chung mot nhom
-		void unite(string id1, string id2){
+		void unite(string ContainerID1, string ContainerID2){
 			// tu dong them vao tranh case empty
-			addContainer(id1);
-        	addContainer(id2);
+			addContainer(ContainerID1);
+        	addContainer(ContainerID2);
         	
-			string root1 = find(id1);
-			string root2 = find(id2);
+			string root1 = find(ContainerID1);
+			string root2 = find(ContainerID2);
 			
 			if(root1 != root2){
 				// gop 2 container lay root1 lam dai dien
@@ -56,9 +56,9 @@ class DSU{
 		}
 		
 		// lay tat ca container thuoc chung nhom voi container id
-		vector<string> getLinkedContainers(string id){
-			if(parent.find(id)== parent.end()) return {};
-			string root = find(id);
+		vector<string> getLinkedContainers(string ContainerID){
+			if(parent.find(ContainerID)== parent.end()) return {};
+			string root = find(ContainerID);
 			return groups[root];
 		}
 };
