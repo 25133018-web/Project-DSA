@@ -17,7 +17,7 @@ struct Vessel
     list<Container>ContainerList; 
 };
 
-//gom nhom bang dsu
+//gom nhom bang dsu //đoạn Hào mới sửa từ đây
 class DSU{
 	private: 
 		unordered_map<string, string> parent;
@@ -88,7 +88,7 @@ class DSU{
         }
         return result;
     }
-};
+}; //tới đây
 // duyet vesselMap va gom nhom
 
 void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMap, DSU& dsu ){
