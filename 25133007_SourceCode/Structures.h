@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const int MAX_YARD_CAPACITY = 4000;
+const int MAX_YARD_CAPACITY = 15000;
 
 enum class Status_Container {
   pre_gate = 1, // cho vao cong
