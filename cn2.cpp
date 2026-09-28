@@ -21,20 +21,26 @@ struct Vessel
 class DSU{
 	private: 
 		unordered_map<string, string> parent;
-		unordered_map<string, vector<string>> groups;
+		unordered_map<string, int> rankMap;
 	public:
 		//thao tac them container vao DSU neu chua co
 		void addContainer(const string& ContainerID){// truyen vao id container
 			if (parent.find(ContainerID) == parent.end()){
 				parent[ContainerID] = ContainerID;
-				groups[ContainerID] = {ContainerID};
+				rankMap[ContainerID] = 0;
 			}
 		}
 		
 		//thao tac find 
 		string find(string ContainerID){
-			if(parent[ContainerID] == ContainerID) return ContainerID;
-			return parent[ContainerID] = find(parent[ContainerID]);
+			if(parent.find(ContainerID) == parent.end()){
+				addContainer(ContainerID);
+				return ContainerID;
+			}
+			if(parent[ContainerID] != ContainerID){
+				parent[ContainerID] = find(parent[ContainerID]);
+			}
+			return parent[ContainerID];
 		}
 		
 		// thao tac union: gop 2 container vao chung mot nhom
@@ -47,11 +53,17 @@ class DSU{
 			string root2 = find(ContainerID2);
 			
 			if(root1 != root2){
-				// gop 2 container lay root1 lam dai dien
-				parent[root2] = root1;	
-				// chuyen danh sach container o root2 sang root1
-				groups[root1].insert(groups[root1].end(), groups[root2].begin(), groups[root2].end());
-				groups.erase(root2); 
+				// gop theo rank
+				if(rankMap[root1] < rankMap[root2]){
+					parent[root1] = root2;
+				}
+				else if(rankMap[root1] > rankMap[root2]){
+					parent[root2] = root1;
+				}
+				else{
+					parent[root2] = root1;
+					rankMap[root1]++;
+				}
 			}
 		}
 		
@@ -59,7 +71,13 @@ class DSU{
 		vector<string> getLinkedContainers(string ContainerID){
 			if(parent.find(ContainerID)== parent.end()) return {};
 			string root = find(ContainerID);
-			return groups[root];
+			vector<string> linkedContainers;
+			for(const auto& entry : parent){
+				if(find(entry.first) == root){
+					linkedContainers.push_back(entry.first);
+				}
+			}
+			return linkedContainers;
 		}
 };
 
