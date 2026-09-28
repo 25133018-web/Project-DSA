@@ -24,10 +24,10 @@ class DSU{
 		unordered_map<string, int> rankMap;
 	public:
 		//thao tac them container vao DSU neu chua co
-		void addContainer(const string& ContainerID){// truyen vao id container
-			if (parent.find(ContainerID) == parent.end()){
-				parent[ContainerID] = ContainerID;
-				rankMap[ContainerID] = 0;
+		void addContainer(const string& containerID){// truyen vao id container
+			if (parent.find(containerID) == parent.end()){
+				parent[containerID] = containerID;
+				rankMap[containerID] = 0;
 			}
 		}
 		
