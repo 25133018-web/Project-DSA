@@ -132,7 +132,7 @@ class DSU{
 }; //tới đây
 // duyet vesselMap va gom nhom
 
-void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMap, DSU& dsu ){
+void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMap, DSU& dsu, unordered_map<string, Container>& containerLookup ){
 	unordered_map<string, string> declarationToContainer;
 	
 	// duyet qua tung tau (vessel) trong VesselMap
@@ -140,6 +140,7 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 		//duyet tung container trong listcontainer cua vessel
 		for( const auto& Container : vessel.ContainerList){
 			// khoi tao container vao dsu
+			containerLookup[Container.container_id] = Container;
 			dsu.addContainer(Container.container_id);
 				//Kiem tra MTK nay da co trong dsu chua
 				if(declarationToContainer.find(Container.customs_declaration_no) != declarationToContainer.end()){
@@ -155,24 +156,40 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 	}
 	
 }
-			
+
+void XuatThongTinCungMaToKhai(const unordered_map<string, Vessel>& VesselMap, const string& target_id){
+	DSU dsu;
+	unordered_map<string, Container> containerLookup;
+    groupContainersByDeclaration(VesselMap, dsu, containerLookup);
+
+    vector<string> linkedGroup = dsu.getLinkedContainers(target_id);
+
+    cout << "CAC CONTAINER CHUNG TO KHAI VOI " << target_id << ":" << endl;
+    cout << "==========================================" << endl;
+
+    if (linkedGroup.empty()) {
+        cout << "Khong tim thay container nao!" << endl;
+    } else {
+        for (const string& id : linkedGroup) {
+            if (containerLookup.find(id) != containerLookup.end()) {
+                displayContainer(containerLookup[id]);
+            }
+        }
+    }
+	
+}
+
 int main (){
 	unordered_map < string, Vessel > VesselMap;
-	
-	VesselMap["MEU"].ContainerList.push_back({"Hang dong lanh","CONT_01", "O cang", 300.45, "TK_1001"});
-    VesselMap["MEU"].ContainerList.push_back({"Hang thuong","CONT_02","O cang", 200.50,"TK_1002"});
-    VesselMap["ONE"].ContainerList.push_back({"Hang thuong","CONT_03", "O cang",400,"TK_1001"});
-    VesselMap["ONE"].ContainerList.push_back({"Hang nguy hiem","CONT_04","O cang",445.30, "TK_1003"});
-    DSU dsu;
-    groupContainersByDeclaration(VesselMap, dsu);
-
-    vector<string> linkedGroup = dsu.getLinkedContainers("CONT_01");
-
-    cout << "Cac container lien quan chung to khai can xu ly chung:" << endl;
-    for (const string& id : linkedGroup) {
-        cout << " -> " << id << endl;
-    }
-
+	VesselMap["MEU"].ContainerList.push_back({Label_Container::RF,"MSCU 123456 6", Status_Container::in_yard, 300.45, "TK_1001"});
+    VesselMap["MEU"].ContainerList.push_back({Label_Container::GP,"MAEU 987654 2", Status_Container::in_yard, 200.50, "TK_1002"});
+    VesselMap["ONE"].ContainerList.push_back({Label_Container::GP,"TGHU 456789 6", Status_Container::in_yard, 400.00, "TK_1001"});
+    VesselMap["ONE"].ContainerList.push_back({Label_Container::DANGER,"CNOU 321654 9", Status_Container::in_yard, 445.30, "TK_1003"});
+    VesselMap["ONE"].ContainerList.push_back({Label_Container::DANGER,"BSIU 852963 6", Status_Container::in_yard, 445.30, "TK_1001"});
+	string targetID;
+	cout <<"Nhap ID container muon tra cuu: ";
+	cin >>targetID;
+	XuatThongTinCungMaToKhai(VesselMap, targetID);
     return 0;
 }
 
