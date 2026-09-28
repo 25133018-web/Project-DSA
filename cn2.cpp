@@ -31,56 +31,64 @@ class DSU{
 			}
 		}
 		
-		//thao tac find 
-		string find(string ContainerID){
-			if(parent.find(ContainerID) == parent.end()){
-				addContainer(ContainerID);
-				return ContainerID;
+//thao tac find 
+		string find(const string& containerID){
+			// tu dong khoi tạo neu chua ton tai
+			if(parent.find(containerID)== parent.end()){
+				addContainer(containerID);
+				return containerID;
 			}
-			if(parent[ContainerID] != ContainerID){
-				parent[ContainerID] = find(parent[ContainerID]);
+			//find root
+			string root = containerID;
+			while (parent[root] != root){
+				root = parent[root];
 			}
-			return parent[ContainerID];
-		}
-		
-		// thao tac union: gop 2 container vao chung mot nhom
-		void unite(string ContainerID1, string ContainerID2){
-			// tu dong them vao tranh case empty
-			addContainer(ContainerID1);
-        	addContainer(ContainerID2);
-        	
-			string root1 = find(ContainerID1);
-			string root2 = find(ContainerID2);
-			
-			if(root1 != root2){
-				// gop theo rank
-				if(rankMap[root1] < rankMap[root2]){
-					parent[root1] = root2;
-				}
-				else if(rankMap[root1] > rankMap[root2]){
-					parent[root2] = root1;
-				}
-				else{
-					parent[root2] = root1;
-					rankMap[root1]++;
-				}
-			}
-		}
-		
-		// lay tat ca container thuoc chung nhom voi container id
-		vector<string> getLinkedContainers(string ContainerID){
-			if(parent.find(ContainerID)== parent.end()) return {};
-			string root = find(ContainerID);
-			vector<string> linkedContainers;
-			for(const auto& entry : parent){
-				if(find(entry.first) == root){
-					linkedContainers.push_back(entry.first);
-				}
-			}
-			return linkedContainers;
-		}
-};
+			//pass 2: nén đường đi
+			string current = containerID;
 
+			while (current != root){
+				string next = parent[current];
+				parent[current] = root;
+				current = next;
+			}
+			return root;
+		}
+		
+		// thao tac union: gop 2 container vao chung mot nhom by rank
+		bool unite(const string& containerA, const string& containerB) {
+        	string rootA = find(containerA);
+        	string rootB = find(containerB);
+        	if (rootA == rootB) return false; // đã cùng nhóm rồi
+
+        	if (rankMap[rootA] < rankMap[rootB]) {
+            	parent[rootA] = rootB;
+        	} 	
+			else if (rankMap[rootA] > rankMap[rootB]) {
+            parent[rootB] = rootA;
+        	} 
+			else {
+            	parent[rootB] = rootA;
+            	rankMap[rootA]++;
+        	}
+        	return true;
+    	}
+
+		// Lấy tất cả container thuộc chung nhóm với container target_id
+    	vector<string> getLinkedContainers(const string& id) {
+        	if (parent.find(id) == parent.end()) return {};
+
+        	string targetRoot = find(id);
+        	vector<string> result;
+
+        	// Duyệt qua tất cả các container đã lưu và tìm những nút có cùng gốc
+        	for (const auto& [containerID, _] : parent) {
+           		if (find(containerID) == targetRoot) {
+                result.push_back(containerID);
+            }
+        }
+        return result;
+    }
+};
 // duyet vesselMap va gom nhom
 
 void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMap, DSU& dsu ){
