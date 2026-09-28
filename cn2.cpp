@@ -181,11 +181,11 @@ void XuatThongTinCungMaToKhai(const unordered_map<string, Vessel>& VesselMap, co
 
 int main (){
 	unordered_map < string, Vessel > VesselMap;
-	VesselMap["MEU"].ContainerList.push_back({Label_Container::RF,"MSCU 123456 6", Status_Container::in_yard, 300.45, "TK_1001"});
-    VesselMap["MEU"].ContainerList.push_back({Label_Container::GP,"MAEU 987654 2", Status_Container::in_yard, 200.50, "TK_1002"});
-    VesselMap["ONE"].ContainerList.push_back({Label_Container::GP,"TGHU 456789 6", Status_Container::in_yard, 400.00, "TK_1001"});
-    VesselMap["ONE"].ContainerList.push_back({Label_Container::DANGER,"CNOU 321654 9", Status_Container::in_yard, 445.30, "TK_1003"});
-    VesselMap["ONE"].ContainerList.push_back({Label_Container::DANGER,"BSIU 852963 6", Status_Container::in_yard, 445.30, "TK_1001"});
+	VesselMap["MSCU"].ContainerList.push_back({Label_Container::RF,"MSCU1234566", Status_Container::in_yard, 300.45, "TK_1001"});
+    VesselMap["MAEU"].ContainerList.push_back({Label_Container::GP,"MAEU9876542", Status_Container::in_yard, 200.50, "TK_1002"});
+    VesselMap["TGHU"].ContainerList.push_back({Label_Container::GP,"TGHU4567896", Status_Container::in_yard, 400.00, "TK_1001"});
+    VesselMap["CNOU"].ContainerList.push_back({Label_Container::DANGER,"CNOU3216549", Status_Container::in_yard, 445.30, "TK_1003"});
+    VesselMap["BSIU"].ContainerList.push_back({Label_Container::DANGER,"BSIU8529636", Status_Container::in_yard, 445.30, "TK_1001"});
 	string targetID;
 	cout <<"Nhap ID container muon tra cuu: ";
 	cin >>targetID;
