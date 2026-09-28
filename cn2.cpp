@@ -25,6 +25,34 @@ struct Container{
     string customs_declaration_no; // mÃ£ to khai
 };
 
+string statusToString(Status_Container status) {
+    switch (status) {
+        case Status_Container::pre_gate: return "Pre Gate";
+        case Status_Container::in_yard:  return "In Yard";
+        case Status_Container::released: return "Released";
+        default: return "Unknown";
+    }
+}
+
+string labelToString(Label_Container label) {
+    switch (label) {
+        case Label_Container::DANGER: return "Hang nguy hiem";
+        case Label_Container::RF:     return "Hang dong lanh";
+        case Label_Container::GP:     return "Hang thuong";
+        default: return "Unknown";
+    }
+}
+
+void displayContainer(const Container& c) {
+    cout << "\n----------------------------------\n";
+    cout << "ID Container : " << c.container_id << "\n";
+    cout << "Loai Nhan    : " << labelToString(c.container_label) << "\n";
+    cout << "Trang Thai   : " << statusToString(c.status) << "\n";
+    cout << "Khoi Luong   : " << c.gross_weight << " tan\n";
+    cout << "Ma To Khai   : " << c.customs_declaration_no << "\n";
+    cout << "----------------------------------\n";
+}
+
 struct Vessel
 { 
     list<Container>ContainerList; 
