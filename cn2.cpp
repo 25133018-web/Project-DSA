@@ -4,12 +4,25 @@
 #include <string>
 #include <list>
 using namespace std;
+
+enum class Status_Container{
+	pre_gate = 1,// cho vao cong
+	in_yard = 2,//da duoc add vao trong bai
+	released = 3// da giai phong khoi bai
+};
+
+enum class Label_Container{
+	DANGER = 1,// hang nguy hiem
+	RF = 2,// hang dong lanh
+	GP = 3 // hang thuong
+};
+
 struct Container{
-	string container_label; // nhan container
+	Label_Container container_label; // nhan container
 	string container_id; // id container
-    string status; // trang thai container
+    Status_Container status; // trang thai container
     double gross_weight; // khoi luong container
-    string customs_declaration_no; // ma to khai
+    string customs_declaration_no; // mÃ£ to khai
 };
 
 struct Vessel
