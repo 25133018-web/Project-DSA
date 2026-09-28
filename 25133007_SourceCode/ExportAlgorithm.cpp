@@ -4,14 +4,13 @@
 #include <cmath>
 #include <iostream>
 #include <list>
-#include <queue>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 void ExportContainer(string &container_id,
                      unordered_map<string, Vessel> &VesselMap,
-                     priority_queue<Container> &ExportQueue) {
+                     priority_queue &ExportQueue) {
 
   // Tách chữ trong ID (mã chuyến tàu)
   string id_voyage_check = "";
@@ -67,8 +66,7 @@ void ExportContainer(string &container_id,
   }
 }
 
-void PrintOrderedExportedContainerQueue(
-    priority_queue<Container> &ExportQueue) {
+void PrintOrderedExportedContainerQueue(priority_queue &ExportQueue) {
 
   cout << "Danh sach container(s) duoc cau len tau:\n";
   int ordinal_number = 1;

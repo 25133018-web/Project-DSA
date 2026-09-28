@@ -3,13 +3,12 @@
 #include <cmath>
 #include <iostream>
 #include <list>
-#include <queue>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 void Interact(unordered_map<string, Vessel> &VesselMap,
-              priority_queue<Container> &ExportQueue) {
+              priority_queue &ExportQueue) {
 
   int user_interactions; // Biến: Số lượng thao tác
   cout << "NHAP SO LUONG THAO TAC BAN CAN: ";

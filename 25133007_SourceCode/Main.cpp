@@ -3,7 +3,6 @@
 #include <cmath>
 #include <iostream>
 #include <list>
-#include <queue>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -28,7 +27,7 @@ int main() {
 
   unordered_map<string, Vessel> VesselMap;
   list<Container> GateContainerQueues;
-  priority_queue<Container> ExportQueue;
+  priority_queue ExportQueue;
 
   /* Nạp sẵn dữ liệu container đang xếp hàng ở cổng
   InitSampleData(GateContainerQueues);*/
