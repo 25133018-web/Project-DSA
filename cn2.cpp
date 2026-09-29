@@ -157,11 +157,7 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 	
 }
 
-void XuatThongTinCungMaToKhai(const unordered_map<string, Vessel>& VesselMap, const string& target_id){
-	DSU dsu;
-	unordered_map<string, Container> containerLookup;
-    groupContainersByDeclaration(VesselMap, dsu, containerLookup);
-
+void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& containerLookup, const string& target_id){
     vector<string> linkedGroup = dsu.getLinkedContainers(target_id);
 
     cout << "CAC CONTAINER CHUNG TO KHAI VOI " << target_id << ":" << endl;
@@ -169,7 +165,8 @@ void XuatThongTinCungMaToKhai(const unordered_map<string, Vessel>& VesselMap, co
 
     if (linkedGroup.empty()) {
         cout << "Khong tim thay container nao!" << endl;
-    } else {
+    } 
+	else {
         for (const string& id : linkedGroup) {
             if (containerLookup.find(id) != containerLookup.end()) {
                 displayContainer(containerLookup[id]);
@@ -186,11 +183,22 @@ int main (){
     VesselMap["TGHU"].ContainerList.push_back({Label_Container::GP,"TGHU4567896", Status_Container::in_yard, 400.00, "TK_1001"});
     VesselMap["CNOU"].ContainerList.push_back({Label_Container::DANGER,"CNOU3216549", Status_Container::in_yard, 445.30, "TK_1003"});
     VesselMap["BSIU"].ContainerList.push_back({Label_Container::DANGER,"BSIU8529636", Status_Container::in_yard, 445.30, "TK_1001"});
+
+	DSU dsu;
+	unordered_map<string, Container> containerLookup;
+    groupContainersByDeclaration(VesselMap, dsu, containerLookup);
+	
 	string targetID;
-	cout <<"Nhap ID container muon tra cuu: ";
-	cin >>targetID;
-	XuatThongTinCungMaToKhai(VesselMap, targetID);
-    return 0;
+	string choice;
+	while (choice == "YES"|| choice == "yes"){
+		cout <<"\nNhap ID container muon tra cuu: ";
+		cin >> targetID;
+	
+		XuatThongTinCungMaToKhai(dsu,containerLookup, targetID);
+		cout << "Ban co muon tim kiem va gop nhom container nua khong? (YES/NO): ";
+		cin>> choice;
+	}
+    	return 0;
 }
 
 
