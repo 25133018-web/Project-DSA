@@ -168,8 +168,9 @@ void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& 
     } 
 	else {
         for (const string& id : linkedGroup) {
-            if (containerLookup.find(id) != containerLookup.end()) {
-                displayContainer(containerLookup[id]);
+			auto it = containerLookup.find(id);
+            if (it != containerLookup.end()) {
+                displayContainer(it->second);
             }
         }
     }
