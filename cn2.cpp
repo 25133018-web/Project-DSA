@@ -190,7 +190,7 @@ int main (){
     groupContainersByDeclaration(VesselMap, dsu, containerLookup);
 	
 	string targetID;
-	string choice;
+	string choice = "YES";
 	while (choice == "YES"|| choice == "yes"){
 		cout <<"\nNhap ID container muon tra cuu: ";
 		cin >> targetID;
