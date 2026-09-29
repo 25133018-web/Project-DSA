@@ -122,7 +122,7 @@ class DSU{
         	vector<string> result;
 
         	// Duyệt qua tất cả các container đã lưu và tìm những nút có cùng gốc
-        	for (const auto& [containerID, _] : parent) {
+        	for (const auto& [containerID, parentID] : parent) {
            		if (find(containerID) == targetRoot) {
                 result.push_back(containerID);
             }
