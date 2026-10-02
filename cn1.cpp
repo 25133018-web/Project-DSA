@@ -97,25 +97,7 @@ class ContainerTrie{
         dfs(curr,prefix,results);
         return results;
     }
-
-    //dit me tuoi lon 
-
+    
 
 
-
-
-
-
-    // public:
-    //     ContainerTrie(){
-    //         root = new TrieNode();
-    //     }
-    //     vector<char> suggestNextChar(const string& prefix){
-    //         TrieNode* current = root;
-    //         vector <char> nextChars;
-    //         for ( char ch : prefix){
-    //             ch = toupper(ch); // in hoa 
-    //             if (current->children.find(ch)==current->children.end())
-    //         }
-    //     }
 }
