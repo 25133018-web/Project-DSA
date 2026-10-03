@@ -16,12 +16,12 @@ void displayContainer(const Container &c) {
 void groupContainersByDeclaration(
     const unordered_map<string, Vessel> &VesselMap, DSU &dsu,
     unordered_map<string, Container> &containerLookup) {
-  unordered_map<string, string> declarationToContainer;
+  	unordered_map<string, string> declarationToContainer;
 
   // duyet qua tung tau (vessel) trong VesselMap
-  for (const auto &[vesselID, vessel] : VesselMap) {
+  for (const auto& [vesselID, vessel] : VesselMap) {
     // duyet tung container trong listcontainer cua vessel
-    for (const auto &Container : vessel.ContainerList) {
+    for (const auto& c : vessel.ContainerList) {
       // kiem tra trung ID container
       if (containerLookup.find(Container.container_id) !=
           containerLookup.end()) {
@@ -29,9 +29,9 @@ void groupContainersByDeclaration(
              << vesselID << ") bi trung ID, bo qua.\n";
         continue;
       }
-      // khoi tao container vao dsu
-      containerLookup[Container.container_id] = Container;
-      dsu.addContainer(Container.container_id);
+      // Khoi tao container vao dsu & lookup
+        containerLookup[c.container_id] = c;
+        dsu.addContainer(c.container_id);
       // ma to khai rong: khong gop vao nhom nao
       if (Container.customs_declaration_no.empty()) {
         cout << "[CANH BAO] Container " << Container.container_id
@@ -73,8 +73,7 @@ void XuatThongTinCungMaToKhai(
   }
 }
 
-// ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN
-// =====================
+// ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN =====================
 void gopNhomContainer(DSU &dsu,
                       unordered_map<string, Container> &containerLookup) {
   string idA, idB;
