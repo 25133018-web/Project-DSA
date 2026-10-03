@@ -71,15 +71,17 @@ class DSU{
 				rankMap[containerID] = 0;
 			}
 		}
-		
-//thao tac find 
+		bool contains(const string& containerID) const {
+			return parent.find(containerID) != parent.end();
+		}
+		//thao tac find 
 		string find(const string& containerID){
 			// tu dong khoi tạo neu chua ton tai
 			if(parent.find(containerID)== parent.end()){
 				addContainer(containerID);
 				return containerID;
 			}
-			//find root
+			//pass1: find root
 			string root = containerID;
 			while (parent[root] != root){
 				root = parent[root];
@@ -105,7 +107,7 @@ class DSU{
             	parent[rootA] = rootB;
         	} 	
 			else if (rankMap[rootA] > rankMap[rootB]) {
-            parent[rootB] = rootA;
+            	parent[rootB] = rootA;
         	} 
 			else {
             	parent[rootB] = rootA;
@@ -114,22 +116,27 @@ class DSU{
         	return true;
     	}
 
-		// Lấy tất cả container thuộc chung nhóm với container target_id
-    	vector<string> getLinkedContainers(const string& id) {
-        	if (parent.find(id) == parent.end()) return {};
+		// kiem tra 2 container co cung nhom khong
+		bool connected(const string& a, const string& b){
+			if (!contains(a) || !contains(b)) return false;
+			return find(a) == find(b);
+		}
 
-        	string targetRoot = find(id);
-        	vector<string> result;
+		// lay tat ca container cung nhom voi id
+		vector<string> getLinkedContainers(const string& id){
+			if (!contains(id)) return {};
+			string targetRoot = find(id);
+			vector<string> result;
+			for (const auto& [containerID, parentID] : parent){
+				if (find(containerID) == targetRoot){
+					result.push_back(containerID);
+				}
+			}
+			return result;
+		}
+}; 
 
-        	// Duyệt qua tất cả các container đã lưu và tìm những nút có cùng gốc
-        	for (const auto& [containerID, parentID] : parent) {
-           		if (find(containerID) == targetRoot) {
-                result.push_back(containerID);
-            }
-        }
-        return result;
-    }
-}; //tới đây
+// ===================== GOM NHOM CONTAINER CO CUNG MTK =====================
 // duyet vesselMap va gom nhom
 
 void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMap, DSU& dsu, unordered_map<string, Container>& containerLookup ){
@@ -139,42 +146,80 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 	for (const auto& [vesselID, vessel] : VesselMap){
 		//duyet tung container trong listcontainer cua vessel
 		for( const auto& Container : vessel.ContainerList){
+			// kiem tra trung ID container
+			if (containerLookup.find(c.container_id) != containerLookup.end()){
+				cout << "[LOI] Container " << c.container_id
+				     << " (tau " << vesselID << ") bi trung ID, bo qua.\n";
+				continue;
+			}
 			// khoi tao container vao dsu
 			containerLookup[Container.container_id] = Container;
 			dsu.addContainer(Container.container_id);
+			// ma to khai rong: khong gop vao nhom nao
+			if (c.customs_declaration_no.empty()){
+				cout << "[CANH BAO] Container " << c.container_id
+				     << " khong co ma to khai, khong gom nhom.\n";
+				continue;
+			}
 				//Kiem tra MTK nay da co trong dsu chua
-				if(declarationToContainer.find(Container.customs_declaration_no) != declarationToContainer.end()){
-					//neu da co container co cung mtk truoc do thi tien hanh gop nhom
-					string previousContainerID = declarationToContainer[Container.customs_declaration_no];
-				 	dsu.unite(previousContainerID, Container.container_id);
-				}
-				else{
-					//lan dau thay ma to khai nay thi lay container do lam dai dien
-					declarationToContainer[Container.customs_declaration_no] = Container.container_id;
-				}
+			auto it = declarationToContainer.find(c.customs_declaration_no);
+			if (it != declarationToContainer.end()){
+				dsu.unite(it->second, c.container_id);
+			}
+			else{
+				declarationToContainer[c.customs_declaration_no] = c.container_id;
+			}
 		}
 	}
 	
 }
 
 void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& containerLookup, const string& target_id){
-    vector<string> linkedGroup = dsu.getLinkedContainers(target_id);
+    if (containerLookup.find(target_id) == containerLookup.end()){
+		cout << "Khong tim thay container " << target_id << "!\n";
+		return;
+	}
+	vector<string> linkedGroup = dsu.getLinkedContainers(target_id);
 
     cout << "CAC CONTAINER CHUNG TO KHAI VOI " << target_id << ":" << endl;
     cout << "==========================================" << endl;
 
-    if (linkedGroup.empty()) {
-        cout << "Khong tim thay container nao!" << endl;
-    } 
-	else {
-        for (const string& id : linkedGroup) {
-			auto it = containerLookup.find(id);
-            if (it != containerLookup.end()) {
-                displayContainer(it->second);
-            }
-        }
-    }
+    for (const string& id : linkedGroup){
+		auto it = containerLookup.find(id);
+		if (it != containerLookup.end()){
+			displayContainer(it->second);
+		}
+	}
+	if (linkedGroup.size() == 1){
+		cout << "(Khong co container nao khac lien ket voi container nay)\n";
+	}
 	
+}
+
+// ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN =====================
+void gopNhomContainer(DSU& dsu, const unordered_map<string, Container>& containerLookup){
+	string idA, idB;
+	cout << "Nhap ID container thuoc nhom thu nhat: ";
+	cin >> idA;
+	cout << "Nhap ID container thuoc nhom thu hai : ";
+	cin >> idB;
+
+	if (containerLookup.find(idA) == containerLookup.end()){
+		cout << "Khong tim thay container " << idA << "!\n";
+		return;
+	}
+	if (containerLookup.find(idB) == containerLookup.end()){
+		cout << "Khong tim thay container " << idB << "!\n";
+		return;
+	}
+
+	if (dsu.unite(idA, idB)){
+		cout << "Da gop nhom cua " << idA << " va " << idB << " thanh mot nhom.\n";
+		cout << "Nhom moi hien co " << dsu.getLinkedContainers(idA).size() << " container.\n";
+	}
+	else{
+		cout << idA << " va " << idB << " da thuoc cung mot nhom, khong can gop.\n";
+	}
 }
 
 int main (){
@@ -184,22 +229,41 @@ int main (){
     VesselMap["TGHU"].ContainerList.push_back({Label_Container::GP,"TGHU4567896", Status_Container::in_yard, 400.00, "TK_1001"});
     VesselMap["CNOU"].ContainerList.push_back({Label_Container::DANGER,"CNOU3216549", Status_Container::in_yard, 445.30, "TK_1003"});
     VesselMap["BSIU"].ContainerList.push_back({Label_Container::DANGER,"BSIU8529636", Status_Container::in_yard, 445.30, "TK_1001"});
-
+	// du lieu thu loi: ma to khai rong va trung ID
+	VesselMap["EMPT"].ContainerList.push_back({Label_Container::GP,     "EMPT0000001", Status_Container::pre_gate, 100.00, ""});
 	DSU dsu;
 	unordered_map<string, Container> containerLookup;
     groupContainersByDeclaration(VesselMap, dsu, containerLookup);
 	
-	string targetID;
-	string choice = "YES";
-	while (choice == "YES"|| choice == "yes"){
-		cout <<"\nNhap ID container muon tra cuu: ";
-		cin >> targetID;
-	
-		XuatThongTinCungMaToKhai(dsu,containerLookup, targetID);
-		cout << "Ban co muon tim kiem va gop nhom container nua khong? (YES/NO): ";
-		cin>> choice;
+	int choice = -1;
+	while (choice != 0){
+		cout << "\n===== QUAN LY NHOM CONTAINER THEO TO KHAI =====\n";
+		cout << "1. Tra cuu cac container cung nhom\n";
+		cout << "2. Gop 2 nhom container\n";
+		cout << "0. Thoat\n";
+		cout << "Chon: ";
+		if (!(cin >> choice)){
+			cin.clear();
+			cin.ignore(10000, '\n');
+			choice = -1;
+			cout << "Lua chon khong hop le!\n";
+			continue;
+		}
+
+		if (choice == 1){
+			string targetID;
+			cout << "Nhap ID container muon tra cuu: ";
+			cin >> targetID;
+			XuatThongTinCungMaToKhai(dsu, containerLookup, targetID);
+		}
+		else if (choice == 2){
+			gopNhomContainer(dsu, containerLookup);
+		}
+		else if (choice != 0){
+			cout << "Lua chon khong hop le!\n";
+		}
 	}
-    	return 0;
+	return 0;
 }
 
 
