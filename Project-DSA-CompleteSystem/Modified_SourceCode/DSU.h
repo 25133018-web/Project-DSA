@@ -9,13 +9,14 @@ class DSU {
 private:
   unordered_map<string, string> parent;
   unordered_map<string, int> rankMap;
-
+  unordered_map<string, vector<string>> groupMembers;
 public:
   // thao tac them container vao DSU neu chua co
   void addContainer(const string &containerID) { // truyen vao id container
     if (parent.find(containerID) == parent.end()) {
       parent[containerID] = containerID;
       rankMap[containerID] = 0;
+      groupMembers[containerID] = {containerID};
     }
   }
   bool contains(const string &containerID) const {
@@ -44,42 +45,43 @@ public:
     return root;
   }
 
-  // thao tac union: gop 2 container vao chung mot nhom by rank
-  bool unite(const string &containerA, const string &containerB) {
-    string rootA = find(containerA);
-    string rootB = find(containerB);
-    if (rootA == rootB)
-      return false; // đã cùng nhóm rồi
+  bool unite(const string& containerA, const string& containerB){
+			string rootA = find(containerA);
+			string rootB = find(containerB);
+			if (rootA == rootB) return false;
+			// Xac dinh newRoot (gốc mới) va childRoot (gốc cũ bị gộp vào)
+        	string newRoot = rootA;
+        	string childRoot = rootB;
 
-    if (rankMap[rootA] < rankMap[rootB]) {
-      parent[rootA] = rootB;
-    } else if (rankMap[rootA] > rankMap[rootB]) {
-      parent[rootB] = rootA;
-    } else {
-      parent[rootB] = rootA;
-      rankMap[rootA]++;
-    }
-    return true;
-  }
-
-  // kiem tra 2 container co cung nhom khong
-  bool connected(const string &a, const string &b) {
-    if (!contains(a) || !contains(b))
-      return false;
-    return find(a) == find(b);
-  }
-
-  // lay tat ca container cung nhom voi id
-  vector<string> getLinkedContainers(const string &id) {
-    if (!contains(id))
-      return {};
-    string targetRoot = find(id);
-    vector<string> result;
-    for (const auto &[containerID, parentID] : parent) {
-      if (find(containerID) == targetRoot) {
-        result.push_back(containerID);
+      if (rankMap[rootA] < rankMap[rootB]) {
+            	newRoot = rootB;
+            	childRoot = rootA;
+      } 
+		  else if (rankMap[rootA] == rankMap[rootB]) {
+           	 	rankMap[rootA]++;
       }
+
+      parent[childRoot] = newRoot;
+
+      // Chuyen toan bo thanh vien tu childRoot sang newRoot
+      auto& listNew = groupMembers[newRoot];
+      auto& listChild = groupMembers[childRoot];
+      listNew.insert(listNew.end(), make_move_iterator(listChild.begin()), make_move_iterator(listChild.end()));
+      groupMembers.erase(childRoot);
+
+      return true;
+		}
+
+		// kiem tra 2 container co cung nhom khong
+		bool connected(const string& a, const string& b){
+			if (!contains(a) || !contains(b)) return false;
+			return find(a) == find(b);
+		}
+
+		// Truy van O(1) danh sach container cung nhom
+    vector<string> getLinkedContainers(const string& id) {
+        if (!contains(id)) return {};
+        string root = find(id);
+        return groupMembers[root];
     }
-    return result;
-  }
 };
