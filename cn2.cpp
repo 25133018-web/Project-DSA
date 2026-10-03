@@ -151,7 +151,7 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 	// duyet qua tung tau (vessel) trong VesselMap
 	for (const auto& [vesselID, vessel] : VesselMap){
 		//duyet tung container trong listcontainer cua vessel
-		for( const auto& Container : vessel.ContainerList){
+		for( const auto& c : vessel.ContainerList){
 			// kiem tra trung ID container
 			if (containerLookup.find(c.container_id) != containerLookup.end()){
 				cout << "[LOI] Container " << c.container_id
@@ -203,7 +203,7 @@ void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& 
 }
 
 // ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN =====================
-void gopNhomContainer(DSU& dsu, const unordered_map<string, Container>& containerLookup){
+void gopNhomContainer(DSU& dsu, unordered_map<string, Container>& containerLookup){
 	string idA, idB;
 	cout << "Nhap ID container thuoc nhom thu nhat: ";
 	cin >> idA;
