@@ -35,6 +35,8 @@ void groupContainersByDeclaration(
 
 void XuatThongTinCungMaToKhai(
     DSU &dsu, const unordered_map<string, Container> &containerLookup,
+
+void SEARCH_ID(const HashTable &yardHashTable);
     const string &target_id);
 
 void gopNhomContainer(DSU &dsu,
