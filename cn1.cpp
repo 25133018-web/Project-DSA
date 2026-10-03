@@ -97,7 +97,5 @@ class ContainerTrie{
         dfs(curr,prefix,results);
         return results;
     }
-    
-
 
 }
