@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <list>
+#include <iterator> 
 using namespace std;
 
 enum class Status_Container{
@@ -158,9 +159,9 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 				     << " (tau " << vesselID << ") bi trung ID, bo qua.\n";
 				continue;
 			}
-			// khoi tao container vao dsu
-			containerLookup[Container.container_id] = Container;
-			dsu.addContainer(Container.container_id);
+			// Khoi tao container vao dsu & lookup
+            containerLookup[c.container_id] = c;
+            dsu.addContainer(c.container_id);
 			// ma to khai rong: khong gop vao nhom nao
 			if (c.customs_declaration_no.empty()){
 				cout << "[CANH BAO] Container " << c.container_id
