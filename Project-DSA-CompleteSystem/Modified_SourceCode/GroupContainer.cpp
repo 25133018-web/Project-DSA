@@ -68,7 +68,7 @@ void XuatThongTinCungMaToKhai(
       displayContainer(it->second);
     }
   }
-  if (linkedGroup.size() == 1) {
+  if (linkedGroup.size() <= 1) {
     cout << "(Khong co container nao khac lien ket voi container nay)\n";
   }
 }
@@ -76,7 +76,7 @@ void XuatThongTinCungMaToKhai(
 // ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN
 // =====================
 void gopNhomContainer(DSU &dsu,
-                      const unordered_map<string, Container> &containerLookup) {
+                      unordered_map<string, Container> &containerLookup) {
   string idA, idB;
   cout << "Nhap ID container thuoc nhom thu nhat: ";
   cin >> idA;
@@ -93,10 +93,22 @@ void gopNhomContainer(DSU &dsu,
   }
 
   if (dsu.unite(idA, idB)) {
-    cout << "Da gop nhom cua " << idA << " va " << idB << " thanh mot nhom.\n";
-    cout << "Nhom moi hien co " << dsu.getLinkedContainers(idA).size()
-         << " container.\n";
-  } else {
-    cout << idA << " va " << idB << " da thuoc cung mot nhom, khong can gop.\n";
-  }
+        // Lay ma to khai đại diện (uu tien idA, neu rong lay idB)
+        string mainDeclaration = containerLookup[idA].customs_declaration_no;
+        if (mainDeclaration.empty()) {
+            mainDeclaration = containerLookup[idB].customs_declaration_no;
+        }
+
+        // Dong bo ma to khai cho tat ca thanh vien trong nhom moi
+        vector<string> mergedGroup = dsu.getLinkedContainers(idA);
+        for (const string& id : mergedGroup) {
+            containerLookup[id].customs_declaration_no = mainDeclaration;
+        }
+
+        cout << "Da gop nhom cua " << idA << " va " << idB << " thanh mot nhom.\n";
+        cout << "Nhom moi hien co " << mergedGroup.size() << " container lien thong.\n";
+    } 
+	else {
+        cout << idA << " va " << idB << " da thuoc cung mot nhom, khong can gop.\n";
+    }
 }
