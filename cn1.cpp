@@ -6,9 +6,11 @@ using namespace std;
 
 struct TrieNode{
     TrieNode* children[36];
+    Container* container;
     bool isEnd;
     TrieNode(){
         isEnd = false;
+        container = nullptr;
         for (int i = 0; i < 36; i++){
             children[i] = nullptr;
         }
@@ -17,17 +19,7 @@ struct TrieNode{
 class ContainerTrie{
 
     private:
-    struct Trie{
-        TrieNode* children[36];
-        bool isEnd;
-
-        Trie(){
-            isEnd = false;
-            for (int i = 0; i < 36; i++){
-                children[i] = nullptr;
-            }
-        }
-    };
+    
     TrieNode* root;
     int getIndex(char ch){
         if (ch >= 'A' && ch <= 'Z'){
@@ -45,17 +37,17 @@ class ContainerTrie{
         }
         return '\0'; // Invalid index
     }
-    void dfs(TrieNode* node, string& currentprefix, vector<string>results){
-        if (node->isEnd){
-            results.push_back(currentprefix);
+    void dfs(TrieNode* node, string& currentprefix, vector<Container*>& result){
+        if (node->isEnd&& node->container){
+            result.push_back(node->container);
         }
         for (int i=0; i<36;i++){
             if (node->children[i]){
-                dfs(node->children[i], currentprefix + getChar(i), results);
+                dfs(node->children[i], currentprefix + getChar(i), result);
             }
         }
     }
-    void clearNode(){
+    void clearNode(TrieNode* node){
         if(!node) return; 
         for(int i=0; i<36; i++){
             if (node->children[i]){
@@ -65,28 +57,31 @@ class ContainerTrie{
         delete node;
     }
     public:
-    Tries(){
+    ContainerTrie(){
         root = new TrieNode();
     }
-    ~Tries(){
+    ~ContainerTrie(){
         clearNode(root);
     }
-    void insert(const string& word){
-        TriesNode* curr = root;
-        for (char ch:word){
+    ContainerTrie(const ContainerTrie&) = delete;
+    ContainerTrie& operator=(const ContainerTrie&) = delete;
+    void insert(Container* c){
+        TrieNode* curr = root;
+        for (char ch: c.container_id){
             int index = getIndex(ch);
-            if (index == -1) continue; 
+            if (index == -1) continue; //skipinvalidcharacters
             if (curr->children[index] == nullptr){
                 curr->children [index] = new TrieNode();
             }
             curr = curr->children[index];
         }
         curr->isEnd = true;
+        curr->container = c;
     }
-    vector<string> getSuggestions(const string& prefix){
+    vector<Container*> getSuggestions(const string& prefix){
         TrieNode* curr = root;
-        vector<string> results;
-        for (char ch: word){
+        vector<Container*> results;
+        for (char ch: prefix){
             int index = getIndex(ch);
             if (index == -1 ||curr->children[index] == nullptr) continue; 
             if (curr->children[index] == nullptr){
@@ -97,5 +92,24 @@ class ContainerTrie{
         dfs(curr,prefix,results);
         return results;
     }
-
+    // auto complete function
+    vector<Container*> searchbyprefix(const string& fprefix){
+        string prefix = fprefix;
+        for (char& c: prefix){
+             c = toupper(c);
+        }
+        if (prefix.size()<2) {
+            cout << "Prefix must be at least 2 characters long.\n";
+            return {};
+        }   
+        return trie.getSuggestions(prefix);
+    }
+     void showInfo(Container* c) {
+        if (!c) { cout << "  [!] Container khong ton tai.\n"; return; }
+        cout << "  Container ID : " << c->container_id<< "\n";
+        cout << "  Label         : " << labelToStr(c->container_label)<<"\n";
+        cout << "  Status    : " << statusToStr(c->status)<< "\n";
+        cout << "  Gross weight (kg) : " << c->gross_weight<< "\n";
+        cout << "  Ma to khai      : " << c->customs_declaration_no<< "\n";
+    }
 }
