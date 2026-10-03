@@ -63,12 +63,14 @@ class DSU{
 	private: 
 		unordered_map<string, string> parent;
 		unordered_map<string, int> rankMap;
+		unordered_map<string, vector<string>> groupMembers;
 	public:
 		//thao tac them container vao DSU neu chua co
 		void addContainer(const string& containerID){// truyen vao id container
 			if (parent.find(containerID) == parent.end()){
 				parent[containerID] = containerID;
 				rankMap[containerID] = 0;
+				groupMembers[containerID] = {containerID};
 			}
 		}
 		bool contains(const string& containerID) const {
@@ -103,16 +105,26 @@ class DSU{
         	string rootB = find(containerB);
         	if (rootA == rootB) return false; // đã cùng nhóm rồi
 
+        	// Xac dinh newRoot (gốc mới) va childRoot (gốc cũ bị gộp vào)
+        	string newRoot = rootA;
+        	string childRoot = rootB;
+
         	if (rankMap[rootA] < rankMap[rootB]) {
-            	parent[rootA] = rootB;
-        	} 	
-			else if (rankMap[rootA] > rankMap[rootB]) {
-            	parent[rootB] = rootA;
+            	newRoot = rootB;
+            	childRoot = rootA;
         	} 
-			else {
-            	parent[rootB] = rootA;
-            	rankMap[rootA]++;
+			else if (rankMap[rootA] == rankMap[rootB]) {
+           	 	rankMap[rootA]++;
         	}
+
+        	parent[childRoot] = newRoot;
+
+        	// Chuyen toan bo thanh vien tu childRoot sang newRoot
+        	auto& listNew = groupMembers[newRoot];
+        	auto& listChild = groupMembers[childRoot];
+        	listNew.insert(listNew.end(), make_move_iterator(listChild.begin()), make_move_iterator(listChild.end()));
+        	groupMembers.erase(childRoot);
+
         	return true;
     	}
 
@@ -122,18 +134,12 @@ class DSU{
 			return find(a) == find(b);
 		}
 
-		// lay tat ca container cung nhom voi id
-		vector<string> getLinkedContainers(const string& id){
-			if (!contains(id)) return {};
-			string targetRoot = find(id);
-			vector<string> result;
-			for (const auto& [containerID, parentID] : parent){
-				if (find(containerID) == targetRoot){
-					result.push_back(containerID);
-				}
-			}
-			return result;
-		}
+		// Truy van O(1) danh sach container cung nhom
+    	vector<string> getLinkedContainers(const string& id) {
+        	if (!contains(id)) return {};
+        	string root = find(id);
+        	return groupMembers[root];
+    	}
 }; 
 
 // ===================== GOM NHOM CONTAINER CO CUNG MTK =====================
@@ -190,7 +196,7 @@ void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& 
 			displayContainer(it->second);
 		}
 	}
-	if (linkedGroup.size() == 1){
+	if (linkedGroup.size() <= 1){
 		cout << "(Khong co container nao khac lien ket voi container nay)\n";
 	}
 	
@@ -213,13 +219,25 @@ void gopNhomContainer(DSU& dsu, const unordered_map<string, Container>& containe
 		return;
 	}
 
-	if (dsu.unite(idA, idB)){
-		cout << "Da gop nhom cua " << idA << " va " << idB << " thanh mot nhom.\n";
-		cout << "Nhom moi hien co " << dsu.getLinkedContainers(idA).size() << " container.\n";
-	}
-	else{
-		cout << idA << " va " << idB << " da thuoc cung mot nhom, khong can gop.\n";
-	}
+	if (dsu.unite(idA, idB)) {
+        // Lay ma to khai đại diện (uu tien idA, neu rong lay idB)
+        string mainDeclaration = containerLookup[idA].customs_declaration_no;
+        if (mainDeclaration.empty()) {
+            mainDeclaration = containerLookup[idB].customs_declaration_no;
+        }
+
+        // Dong bo ma to khai cho tat ca thanh vien trong nhom moi
+        vector<string> mergedGroup = dsu.getLinkedContainers(idA);
+        for (const string& id : mergedGroup) {
+            containerLookup[id].customs_declaration_no = mainDeclaration;
+        }
+
+        cout << "Da gop nhom cua " << idA << " va " << idB << " thanh mot nhom.\n";
+        cout << "Nhom moi hien co " << mergedGroup.size() << " container lien thong.\n";
+    } 
+	else {
+        cout << idA << " va " << idB << " da thuoc cung mot nhom, khong can gop.\n";
+    }
 }
 
 int main (){
