@@ -22,6 +22,25 @@ void insertToHashTable(const Container& c) {
     newNode->next = hashTable[index];
     hashTable[index] = newNode;
 }
+bool remove(const string &target_id) {
+  int index = hashFunction(target_id);
+  HashNode *curr = table[index];
+  HashNode *prev = nullptr;
+  while (curr != nullptr) {
+    if (curr->data.container_id == target_id) {
+      if (prev == nullptr) {
+        table[index] = curr->next;
+      } else {
+        prev->next = curr->next;
+      }
+      delete curr;
+      return true;
+    }
+    prev = curr;
+    curr = curr->next;
+  }
+  return false; 
+}
 
 void SEARCH_ID() {
     string target_id;
