@@ -59,7 +59,7 @@ struct Vessel
     list<Container>ContainerList; 
 };
 
-//gom nhom bang dsu //đoạn Hào mới sửa từ đây
+//gom nhom bang dsu
 class DSU{
 	private: 
 		unordered_map<string, string> parent;
@@ -119,7 +119,6 @@ class DSU{
         	}
 
         	parent[childRoot] = newRoot;
-
         	// Chuyen toan bo thanh vien tu childRoot sang newRoot
         	auto& listNew = groupMembers[newRoot];
         	auto& listChild = groupMembers[childRoot];
