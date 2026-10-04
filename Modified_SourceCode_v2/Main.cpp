@@ -1,0 +1,49 @@
+#include "YardSystem.h"
+
+// Hàm khởi tạo dữ liệu mẫu cho hàng đợi ngoài cổng
+void InitSampleData(list<Container> &GateContainerQueues) {
+  GateContainerQueues.push_back({Label_Container::GP, "COSU2001111",
+                                 Status_Container::pre_gate, 25.5,
+                                 "100000000001"});
+  GateContainerQueues.push_back({Label_Container::DANGER, "MAEU1002111",
+                                 Status_Container::pre_gate, 28.0,
+                                 "100000000001"});
+  GateContainerQueues.push_back({Label_Container::RF, "MAEU1003123",
+                                 Status_Container::pre_gate, 30.2,
+                                 "100000000002"});
+  GateContainerQueues.push_back({Label_Container::GP, "COSU2001321",
+                                 Status_Container::pre_gate, 30.2,
+                                 "100000000003"});
+  GateContainerQueues.push_back({Label_Container::DANGER, "COSU2002456",
+                                 Status_Container::pre_gate, 30.2,
+                                 "100000000003"});
+  GateContainerQueues.push_back({Label_Container::RF, "SGNG3001458",
+                                 Status_Container::pre_gate, 19.8,
+                                 "100000000004"});
+}
+
+int main() {
+
+  unordered_map<string, Vessel> VesselMap;
+  list<Container> GateContainerQueues;
+  priority_queue ExportQueue;
+
+  // Khởi tạo các bộ máy giải thuật của team:
+  HashTable yardHashTable;
+  ContainerTrie yardTrie;
+  DSU yardDSU;
+  unordered_map<string, Container *> containerLookup;
+
+  // Nạp sẵn dữ liệu container đang xếp hàng ở cổng
+  InitSampleData(GateContainerQueues);
+
+  // Đầu chương trình gọi hàm nhập cảng các container(s) ngoài cổng
+  AddContainer(VesselMap, GateContainerQueues, yardHashTable, yardTrie, yardDSU,
+               containerLookup);
+
+  // Gọi hàm cho phép người dùng tương tác với hệ thống
+  Interact(VesselMap, ExportQueue, yardDSU, containerLookup, yardHashTable,
+           yardTrie);
+
+  return 0;
+}
