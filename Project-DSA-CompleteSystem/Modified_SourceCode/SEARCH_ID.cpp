@@ -5,6 +5,10 @@ void SEARCH_ID(const HashTable &yardHashTable) {
   cout << "\n==========================================";
   cout << "\nNhap vao ID Container can tim kiem: ";
   cin >> target_id;
+  if (target_id.length() != 11) {
+        cout << "\n=> [LOI] Ma container phai gom dung 11 ky tu!\n";
+        return;
+    }
 
   // Gọi hàm tìm kiếm trong bảng băm (bên trong chính là vòng lặp duyệt của bạn
   // mc1)
