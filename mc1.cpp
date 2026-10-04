@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+#include <cctype>
 const int TABLE_SIZE = 20011;
 const int MAX_container = 15000;
 struct Node {
@@ -15,7 +18,12 @@ int hashFunction(const string& container_id) {
     }
     return static_cast<int>(hash % TABLE_SIZE);
 }
-
+string normalizeID(string id) {
+    for (char &c : id) {
+        c = toupper(c);
+    }
+    return id;
+}
 void insertToHashTable(const Container& c) {
     int index = hashFunction(c.container_id);
     Node* newNode = new Node(c);
@@ -51,6 +59,7 @@ void SEARCH_ID() {
         cout << "Loi.Ma container phai gom dung 11 ky tu!";
         return;
     }
+    target_id = normalizeID(target_id);
     int index = hashFunction(target_id);
     Node* curr = hashTable[index];
 
