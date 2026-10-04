@@ -4,7 +4,7 @@
 #include "unordered_map"
 #include <vector>
 #include <iterator>
-// gom nhom bang dsu //đoạn Hào mới sửa từ đây
+// gom nhom bang dsu
 class DSU {
 private:
   unordered_map<string, string> parent;
@@ -62,7 +62,6 @@ public:
       }
 
       parent[childRoot] = newRoot;
-
       // Chuyen toan bo thanh vien tu childRoot sang newRoot
       auto& listNew = groupMembers[newRoot];
       auto& listChild = groupMembers[childRoot];
