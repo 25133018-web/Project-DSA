@@ -146,22 +146,25 @@ class DSU{
 // ===================== GOM NHOM CONTAINER CO CUNG MTK =====================
 // duyet vesselMap va gom nhom
 
-void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMap, DSU& dsu, unordered_map<string, Container>& containerLookup ){
+void groupContainersByDeclaration(unordered_map<string, Vessel>& VesselMap,
+                                  DSU& dsu,
+                                  unordered_map<string, Container*>& containerLookup){
 	unordered_map<string, string> declarationToContainer;
 	
 	// duyet qua tung tau (vessel) trong VesselMap
-	for (const auto& [vesselID, vessel] : VesselMap){
+	for (auto& [vesselID, vessel] : VesselMap){
 		//duyet tung container trong listcontainer cua vessel
-		for( const auto& c : vessel.ContainerList){
+		for(auto& c : vessel.ContainerList){
 			// kiem tra trung ID container
 			if (containerLookup.find(c.container_id) != containerLookup.end()){
 				cout << "[LOI] Container " << c.container_id
 				     << " (tau " << vesselID << ") bi trung ID, bo qua.\n";
 				continue;
 			}
-			// Khoi tao container vao dsu & lookup
-            containerLookup[c.container_id] = c;
+			
+			containerLookup[c.container_id] = &c;// lấy địa chỉ ô nhớ (&c) của container trong VesselMap gán vào map tra cứu.
             dsu.addContainer(c.container_id);
+
 			// ma to khai rong: khong gop vao nhom nao
 			if (c.customs_declaration_no.empty()){
 				cout << "[CANH BAO] Container " << c.container_id
@@ -181,7 +184,9 @@ void groupContainersByDeclaration (const unordered_map<string, Vessel>& VesselMa
 	
 }
 
-void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& containerLookup, const string& target_id){
+void XuatThongTinCungMaToKhai(DSU& dsu,
+                              const unordered_map<string, Container*>& containerLookup,
+                              const string& target_id){
     if (containerLookup.find(target_id) == containerLookup.end()){
 		cout << "Khong tim thay container " << target_id << "!\n";
 		return;
@@ -194,7 +199,7 @@ void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& 
     for (const string& id : linkedGroup){
 		auto it = containerLookup.find(id);
 		if (it != containerLookup.end()){
-			displayContainer(it->second);
+			displayContainer(*(it->second));
 		}
 	}
 	if (linkedGroup.size() <= 1){
@@ -204,7 +209,8 @@ void XuatThongTinCungMaToKhai(DSU& dsu, const unordered_map<string, Container>& 
 }
 
 // ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN =====================
-void gopNhomContainer(DSU& dsu, unordered_map<string, Container>& containerLookup){
+void gopNhomContainer(DSU& dsu, unordered_map<string, Container*>& containerLookup){
+	string idA, idB;
 	string idA, idB;
 	cout << "Nhap ID container thuoc nhom thu nhat: ";
 	cin >> idA;
@@ -222,17 +228,16 @@ void gopNhomContainer(DSU& dsu, unordered_map<string, Container>& containerLooku
 
 	if (dsu.unite(idA, idB)) {
         // Lay ma to khai đại diện (uu tien idA, neu rong lay idB)
-        string mainDeclaration = containerLookup[idA].customs_declaration_no;
+        string mainDeclaration = containerLookup[idA]->customs_declaration_no;
         if (mainDeclaration.empty()) {
-            mainDeclaration = containerLookup[idB].customs_declaration_no;
+            mainDeclaration = containerLookup[idB]->customs_declaration_no;
         }
 
         // Dong bo ma to khai cho tat ca thanh vien trong nhom moi
         vector<string> mergedGroup = dsu.getLinkedContainers(idA);
         for (const string& id : mergedGroup) {
-            containerLookup[id].customs_declaration_no = mainDeclaration;
+            containerLookup[id]->customs_declaration_no = mainDeclaration;
         }
-
         cout << "Da gop nhom cua " << idA << " va " << idB << " thanh mot nhom.\n";
         cout << "Nhom moi hien co " << mergedGroup.size() << " container lien thong.\n";
     } 
@@ -251,7 +256,7 @@ int main (){
 	// du lieu thu loi: ma to khai rong va trung ID
 	VesselMap["EMPT"].ContainerList.push_back({Label_Container::GP,     "EMPT0000001", Status_Container::pre_gate, 100.00, ""});
 	DSU dsu;
-	unordered_map<string, Container> containerLookup;
+	unordered_map<string, Container*> containerLookup;
     groupContainersByDeclaration(VesselMap, dsu, containerLookup);
 	
 	int choice = -1;
