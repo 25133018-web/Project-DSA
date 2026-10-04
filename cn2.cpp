@@ -1,49 +1,3 @@
-#include <iostream>
-#include <unordered_map>
-#include <vector>
-#include <string>
-#include <list>
-#include <iterator> 
-using namespace std;
-
-enum class Status_Container{
-	pre_gate = 1,// cho vao cong
-	in_yard = 2,//da duoc add vao trong bai
-	released = 3// da giai phong khoi bai
-};
-
-enum class Label_Container{
-	DANGER = 1,// hang nguy hiem
-	RF = 2,// hang dong lanh
-	GP = 3 // hang thuong
-};
-
-struct Container{
-	Label_Container container_label; // nhan container
-	string container_id; // id container
-    Status_Container status; // trang thai container
-    double gross_weight; // khoi luong container
-    string customs_declaration_no; // mÃ£ to khai
-};
-
-string statusToString(Status_Container status) {
-    switch (status) {
-        case Status_Container::pre_gate: return "Pre Gate";
-        case Status_Container::in_yard:  return "In Yard";
-        case Status_Container::released: return "Released";
-        default: return "Unknown";
-    }
-}
-
-string labelToString(Label_Container label) {
-    switch (label) {
-        case Label_Container::DANGER: return "Hang nguy hiem";
-        case Label_Container::RF:     return "Hang dong lanh";
-        case Label_Container::GP:     return "Hang thuong";
-        default: return "Unknown";
-    }
-}
-
 void displayContainer(const Container& c) {
     cout << "\n----------------------------------\n";
     cout << "ID Container : " << c.container_id << "\n";
@@ -142,6 +96,9 @@ class DSU{
     	}
 }; 
 
+
+
+//Thao tac 2: Cua Do Nguyet Hanh
 // ===================== GOM NHOM CONTAINER CO CUNG MTK =====================
 // duyet vesselMap va gom nhom
 
@@ -154,12 +111,6 @@ void groupContainersByDeclaration(unordered_map<string, Vessel>& VesselMap,
 	for (auto& [vesselID, vessel] : VesselMap){
 		//duyet tung container trong listcontainer cua vessel
 		for(auto& c : vessel.ContainerList){
-			// kiem tra trung ID container
-			if (containerLookup.find(c.container_id) != containerLookup.end()){
-				cout << "[LOI] Container " << c.container_id
-				     << " (tau " << vesselID << ") bi trung ID, bo qua.\n";
-				continue;
-			}
 			
 			containerLookup[c.container_id] = &c;// lấy địa chỉ ô nhớ (&c) của container trong VesselMap gán vào map tra cứu.
             dsu.addContainer(c.container_id);
@@ -245,47 +196,9 @@ void gopNhomContainer(DSU& dsu, unordered_map<string, Container*>& containerLook
     }
 }
 
-int main (){
-	unordered_map < string, Vessel > VesselMap;
-	VesselMap["MSCU"].ContainerList.push_back({Label_Container::RF,"MSCU1234566", Status_Container::in_yard, 300.45, "TK_1001"});
-    VesselMap["MAEU"].ContainerList.push_back({Label_Container::GP,"MAEU9876542", Status_Container::in_yard, 200.50, "TK_1002"});
-    VesselMap["TGHU"].ContainerList.push_back({Label_Container::GP,"TGHU4567896", Status_Container::in_yard, 400.00, "TK_1001"});
-    VesselMap["CNOU"].ContainerList.push_back({Label_Container::DANGER,"CNOU3216549", Status_Container::in_yard, 445.30, "TK_1003"});
-    VesselMap["BSIU"].ContainerList.push_back({Label_Container::DANGER,"BSIU8529636", Status_Container::in_yard, 445.30, "TK_1001"});
-	// du lieu thu loi: ma to khai rong va trung ID
-	VesselMap["EMPT"].ContainerList.push_back({Label_Container::GP,     "EMPT0000001", Status_Container::pre_gate, 100.00, ""});
-	DSU dsu;
-	unordered_map<string, Container*> containerLookup;
-    groupContainersByDeclaration(VesselMap, dsu, containerLookup);
-	
-	int choice = -1;
-	while (choice != 0){
-		cout << "\n===== QUAN LY NHOM CONTAINER THEO TO KHAI =====\n";
-		cout << "1. Tra cuu cac container cung nhom\n";
-		cout << "2. Gop 2 nhom container\n";
-		cout << "0. Thoat\n";
-		cout << "Chon: ";
-		if (!(cin >> choice)){
-			cin.clear();
-			cin.ignore(10000, '\n');
-			choice = -1;
-			cout << "Lua chon khong hop le!\n";
-			continue;
-		}
 
-		if (choice == 1){
-			string targetID;
-			cout << "Nhap ID container muon tra cuu: ";
-			cin >> targetID;
-			XuatThongTinCungMaToKhai(dsu, containerLookup, targetID);
-		}
-		else if (choice == 2){
-			gopNhomContainer(dsu, containerLookup);
-		}
-		else if (choice != 0){
-			cout << "Lua chon khong hop le!\n";
-		}
-	}
+
+
 	return 0;
 }
 
