@@ -1,5 +1,5 @@
-const int TABLE_SIZE = 1007;
-
+const int TABLE_SIZE = 20011;
+const int MAX_container = 15000;
 struct Node {
     Container data;
     Node* next;
@@ -11,9 +11,9 @@ Node* hashTable[TABLE_SIZE] = {nullptr};
 int hashFunction(const string& container_id) {
     unsigned long hash = 5381;
     for (char c : container_id) {
-        hash = ((hash << 5) + hash) + c;
+        hash = ((hash << 5) + hash) + static_cast<unsigned char>(c);
     }
-    return hash % TABLE_SIZE;
+    return static_cast<int>(hash % TABLE_SIZE);
 }
 
 void insertToHashTable(const Container& c) {
@@ -28,7 +28,10 @@ void SEARCH_ID() {
     cout << "\n==========================================";
     cout << "\nNhap vao ID Container can tim kiem: ";
     cin >> target_id;
-
+    if(target_id.length() != 11){
+        cout << "Loi.Ma container phai gom dung 11 ky tu!";
+        return;
+    }
     int index = hashFunction(target_id);
     Node* curr = hashTable[index];
 
