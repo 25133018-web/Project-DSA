@@ -4,8 +4,8 @@ void Interact(unordered_map<string, Vessel> &VesselMap,
               priority_queue &ExportQueue) {
   //Them cua chuc nang 2
   DSU dsu;
-  unordered_map<string, Container> containerLookup;
-	groupContainersByDeclaration(VesselMap, dsu, containerLookup);
+  unordered_map<string, Container*> containerLookup;
+  groupContainersByDeclaration(VesselMap, dsu, containerLookup);
   
   cout << "BAT DAU NHAP LENH:\n*Nhap DONE de ket thuc.\n";
 
