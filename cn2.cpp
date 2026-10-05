@@ -1,17 +1,4 @@
-void displayContainer(const Container& c) {
-    cout << "\n----------------------------------\n";
-    cout << "ID Container : " << c.container_id << "\n";
-    cout << "Loai Nhan    : " << labelToString(c.container_label) << "\n";
-    cout << "Trang Thai   : " << statusToString(c.status) << "\n";
-    cout << "Khoi Luong   : " << c.gross_weight << " tan\n";
-    cout << "Ma To Khai   : " << c.customs_declaration_no << "\n";
-    cout << "----------------------------------\n";
-}
 
-struct Vessel
-{ 
-    list<Container>ContainerList; 
-};
 //Thao tác 1:Của Lê Anh Hào
 //================================Quản lý và gộp nhóm container===========================//
 //gom nhom bang dsu
