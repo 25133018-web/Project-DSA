@@ -162,7 +162,6 @@ void XuatThongTinCungMaToKhai(DSU& dsu,
 // ===================== GOP NHOM CONTAINER KHI CHUNG THUỘC 1  LÔ HÀNG LỚN =====================
 void gopNhomContainer(DSU& dsu, unordered_map<string, Container*>& containerLookup){
 	string idA, idB;
-	string idA, idB;
 	cout << "Nhap ID container thuoc nhom thu nhat: ";
 	cin >> idA;
 	cout << "Nhap ID container thuoc nhom thu hai : ";
