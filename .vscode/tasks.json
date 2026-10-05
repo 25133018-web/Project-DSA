@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Build DSA Project",
+      "command": "g++",
+      "args": [
+        "-std=c++17",
+        "-g",
+        "Main.cpp",
+        "ExportContainer.cpp",
+        "GroupContainer.cpp",
+        "ImportContainer.cpp",
+        "SEARCH_ID.cpp",
+        "UserInteraction.cpp",
+        "-o",
+        "main.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/CourseProject/Project-DSA-CompleteSystem/Modified_SourceCode_v2"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Biên dịch toàn bộ mã nguồn C++ DSA v2"
+    }
+  ]
+}
