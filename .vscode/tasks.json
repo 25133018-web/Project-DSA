@@ -3,6 +3,40 @@
   "tasks": [
     {
       "type": "shell",
+      "label": "Build Test SiftUp",
+      "command": "g++",
+      "args": [
+        "-std=c++17",
+        "-g",
+        "${workspaceFolder}/Debug_Files/test_priority_queue_SiftUp.cpp",
+        "-o",
+        "${workspaceFolder}/Debug_Files/test_priority_queue_SiftUp.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Biên dịch test_priority_queue_SiftUp.cpp"
+    },
+    {
+      "type": "shell",
+      "label": "Build Current Active File",
+      "command": "g++",
+      "args": [
+        "-std=c++17",
+        "-g",
+        "${file}",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}.exe"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Biên dịch file C++ đang mở"
+    },
+    {
+      "type": "shell",
       "label": "Build DSA Project",
       "command": "g++",
       "args": [
@@ -26,6 +60,17 @@
         "isDefault": true
       },
       "detail": "Biên dịch toàn bộ mã nguồn C++ DSA v2"
+    },
+    {
+      "type": "shell",
+      "label": "Run DSA Project (v2)",
+      "command": ".\\main.exe",
+      "options": {
+        "cwd": "${workspaceFolder}/CourseProject/Project-DSA-CompleteSystem/Modified_SourceCode_v2"
+      },
+      "dependsOn": "Build DSA Project",
+      "problemMatcher": [],
+      "detail": "Tự động biên dịch và chạy toàn bộ hệ thống quản lý Container v2"
     }
   ]
 }

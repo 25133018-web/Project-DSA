@@ -2,12 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Test SiftUp (test_pq_3)",
+      "name": "Debug Current Active File",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/CourseProject/Project-DSA-CompleteSystem/Modified_SourceCode_v2/test_pq_3.exe",
+      "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
       "args": [],
-      "cwd": "${workspaceFolder}/CourseProject/Project-DSA-CompleteSystem/Modified_SourceCode_v2"
+      "cwd": "${fileDirname}",
+      "preLaunchTask": "Build Current Active File"
+    },
+    {
+      "name": "Debug Test SiftUp",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/Debug_Files/test_priority_queue_SiftUp.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build Test SiftUp"
     },
     {
       "name": "Debug DSA Project (v2)",
