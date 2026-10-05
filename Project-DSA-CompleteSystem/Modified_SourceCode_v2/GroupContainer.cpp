@@ -1,13 +1,18 @@
 #include "YardSystem.h"
+#include <iomanip>
+#include <sstream>
 
 void displayContainer(const Container &c) {
-  cout << "\n----------------------------------\n";
-  cout << "ID Container : " << c.container_id << "\n";
-  cout << "Loai Nhan    : " << labelToString(c.container_label) << "\n";
-  cout << "Trang Thai   : " << statusToString(c.status) << "\n";
-  cout << "Khoi Luong   : " << c.gross_weight << " tan\n";
-  cout << "Ma To Khai   : " << c.customs_declaration_no << "\n";
-  cout << "----------------------------------\n";
+  ostringstream oss;
+  oss << fixed << setprecision(2) << c.gross_weight << " tan";
+
+  cout << "\n+----------------------------------------------------------------------+\n";
+  cout << "| MA CONTAINER : " << left << setw(14) << c.container_id
+       << " | TRANG THAI : " << left << setw(21) << statusToString(c.status) << " |\n";
+  cout << "| LOAI HANG    : " << left << setw(14) << labelToString(c.container_label)
+       << " | KHOI LUONG : " << left << setw(21) << oss.str() << " |\n";
+  cout << "| MA TO KHAI   : " << left << setw(51) << c.customs_declaration_no << " |\n";
+  cout << "+----------------------------------------------------------------------+\n";
 }
 
 // ===================== GOM NHOM CONTAINER CO CUNG MTK =====================

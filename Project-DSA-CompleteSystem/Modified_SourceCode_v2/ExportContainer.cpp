@@ -1,6 +1,8 @@
 #include "Container.h"
 #include "YardSystem.h"
 #include <cctype>
+#include <iomanip>
+#include <sstream>
 
 void ExportContainer(string &container_id,
                      unordered_map<string, Vessel> &VesselMap,
@@ -66,15 +68,39 @@ void ExportContainer(string &container_id,
 }
 
 void PrintOrderedExportedContainerQueue(priority_queue &ExportQueue) {
+  if (ExportQueue.empty()) {
+    cout << "\n[THONG BAO] Hang doi cau hien dang trong. Chua co container nao duoc xuat!\n";
+    return;
+  }
 
-  cout << "Danh sach container(s) duoc cau len tau:\n";
+  cout << "\n========================================================================================\n";
+  cout << "|                   DANH SACH DIEU PHOI CAU CONTAINER LEN TAU (MAX-HEAP)                |\n";
+  cout << "========================================================================================\n";
+  cout << left << setw(5)  << "STT"
+       << "| " << setw(13) << "MA CONTAINER"
+       << "| " << setw(13) << "TRONG LUONG"
+       << "| " << setw(18) << "LOAI HANG"
+       << "| " << setw(15) << "TRANG THAI"
+       << "| " << setw(16) << "DO UU TIEN CAU" << "\n";
+  cout << "-----+--------------+--------------+-------------------+----------------+-----------------\n";
+
   int ordinal_number = 1;
   while (!ExportQueue.empty()) {
-    cout << ordinal_number++ << ". ID: " << ExportQueue.top().container_id
-         << " --- Khoi luong: " << ExportQueue.top().gross_weight << " tan"
-         << " --- Trang thai: " << statusToString(ExportQueue.top().status)
-         << " --- Loai hang: "
-         << labelToString(ExportQueue.top().container_label) << "\n";
+    Container top_c = ExportQueue.top();
+    string priority_tag = (ordinal_number == 1) ? "[MAX PRIORITY]" : "THU TU CAU";
+
+    ostringstream weight_ss;
+    weight_ss << fixed << setprecision(2) << top_c.gross_weight << " tan";
+
+    cout << left << setw(5)  << (to_string(ordinal_number++) + ".")
+         << "| " << setw(13) << top_c.container_id
+         << "| " << setw(13) << weight_ss.str()
+         << "| " << setw(18) << labelToString(top_c.container_label)
+         << "| " << setw(15) << statusToString(top_c.status)
+         << "| " << setw(16) << priority_tag << "\n";
+
     ExportQueue.pop();
   }
+  cout << "----------------------------------------------------------------------------------------\n";
+  cout << "(*) Ghi chu: Container co trong luong lon hon duoc cau truoc de dam bao trong tam tau.\n\n";
 }
