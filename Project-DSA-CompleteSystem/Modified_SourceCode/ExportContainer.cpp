@@ -1,9 +1,12 @@
+#include "Container.h"
 #include "YardSystem.h"
 #include <cctype>
 
 void ExportContainer(string &container_id,
                      unordered_map<string, Vessel> &VesselMap,
-                     priority_queue &ExportQueue) {
+                     priority_queue &ExportQueue, HashTable &yardHashTable,
+                     ContainerTrie &yardTrie,
+                     unordered_map<string, Container *> &containerLookup) {
 
   // Tách chữ trong ID (mã chuyến tàu)
   string id_voyage_check = "";
@@ -41,6 +44,9 @@ void ExportContainer(string &container_id,
           Status_Container ::released; // đổi trang thái biến tạm
       ExportQueue.push(
           the_exported_container_found); // cho biến tạm vào danh sách cẩu
+      yardHashTable.remove(container_id);
+      yardTrie.remove(container_id);
+      containerLookup.erase(container_id);
       list_of_the_exported_container.erase(
           temp); // xóa container đã tìm được ra khỏi VesselMap
 
@@ -65,7 +71,7 @@ void PrintOrderedExportedContainerQueue(priority_queue &ExportQueue) {
   int ordinal_number = 1;
   while (!ExportQueue.empty()) {
     cout << ordinal_number++ << ". ID: " << ExportQueue.top().container_id
-         << " --- Khoi luong: " << ExportQueue.top().gross_weight << "KG"
+         << " --- Khoi luong: " << ExportQueue.top().gross_weight << " tan"
          << " --- Trang thai: " << statusToString(ExportQueue.top().status)
          << " --- Loai hang: "
          << labelToString(ExportQueue.top().container_label) << "\n";
