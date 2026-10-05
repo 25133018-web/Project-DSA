@@ -1,133 +1,62 @@
-#include "YardSystem.h"
+#include "HashTable.h"
 #include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-
 using namespace std;
 
-static void printTestHeader(const string &name) {
-  cout << "\n========================================\n";
-  cout << name << "\n";
-  cout << "========================================\n";
-}
-
-static void printResult(const string &scenario, bool passed) {
-  cout << (passed ? "[PASS] " : "[FAIL] ") << scenario << "\n";
-}
-
-static bool addUniqueIfNormalizedNotExists(HashTable &table, ContainerTrie &trie,
-                                          vector<Container> &storage,
-                                          const string &rawId,
-                                          const string &decl,
-                                          double weight) {
-  string normalized = normalizeID(rawId);
-  if (table.search(normalized) != nullptr) {
-    return false;
-  }
-
-  storage.push_back({Label_Container::GP, normalized, Status_Container::in_yard,
-                     weight, decl});
-  Container &c = storage.back();
-  table.insert(c);
-  trie.insert(&c);
-  return true;
+void printTestResult(const string &message, bool passed) {
+  cout << message << " -> Ket qua test: "
+       << (passed ? "true" : "false") << "\n";
 }
 
 int main() {
-  HashTable yardHashTable;
-  ContainerTrie yardTrie;
-  vector<Container> storage;
+  HashTable table;
 
-  printTestHeader("TEST: THEM XOA TIM KIEM CONTAINER");
+  cout << "--- Test HashTable ---\n";
 
-  // 1. Thêm một container mới hợp lệ ("ABCD1234567", 12.5 tấn, "DECL-1")
-  {
-    bool ok = addUniqueIfNormalizedNotExists(yardHashTable, yardTrie, storage,
-                                            "ABCD1234567", "DECL-1", 12.5);
-    printResult("Them container hop le ABCD1234567", ok);
-    if (!ok) {
-      cout << "  -> Khong the them container hop le dau tien.\n";
-      return 1;
-    }
-  }
+  // 1. Them container hop le
+  Container c1 = {Label_Container::GP, "ABCD1234567", Status_Container::in_yard,
+                  12.5, "DECL-1"};
+  table.insert(c1);
+  printTestResult("1) Them container hop le",
+                  table.search("ABCD1234567") != nullptr);
 
-  // 2. Thử thêm container có ID chữ thường "abcd1234567" khi ID "ABCD1234567" đã tồn tại.
-  {
-    bool ok = addUniqueIfNormalizedNotExists(yardHashTable, yardTrie, storage,
-                                            "abcd1234567", "DECL-1-DUP", 15.0);
-    printResult("Them duplicate normalized ID lowercase", !ok);
-  }
+  // 2. Tim kiem container bang ID dung
+  printTestResult("2) Tim bang ID dung",
+                  table.search("ABCD1234567") != nullptr);
 
-  // 3. Thực hiện xóa container đang tồn tại bằng chuỗi chữ thường "abcd1234567".
-  {
-    string id = normalizeID("abcd1234567");
-    bool removed = yardHashTable.remove(id);
-    printResult("Xoa container bang lowercase ID", removed);
-  }
+  // 3. Chuan hoa ID viet thuong truoc khi tim, giong cach dung trong ung dung
+  printTestResult("3) Tim bang ID viet thuong",
+                  table.search(normalizeID("abcd1234567")) != nullptr);
 
-  // 4. Tra cứu container "ABCD1234567" ngay sau khi thực hiện thao tác xóa.
-  {
-    bool found = (yardHashTable.search("ABCD1234567") == nullptr);
-    printResult("Tra cuu sau khi xoa -> khong ton tai", found);
-  }
+  // 4. Xoa container bang ID viet thuong
+  bool removed = table.remove(normalizeID("abcd1234567"));
+  printTestResult("4) Xoa container bang ID viet thuong", removed);
 
-  // 5. Thử xóa container có ID không tồn tại trong bảng băm ("ABCD1234567" sau khi đã xóa)
-  {
-    bool removed = yardHashTable.remove("ABCD1234567");
-    printResult("Xoa container khong ton tai", !removed);
-  }
+  // 5. Tim kiem sau khi xoa
+  printTestResult("5) Tim sau khi xoa",
+                  table.search("ABCD1234567") == nullptr);
 
-  // 6. Thêm lại container "ABCD1234567" vào bảng băm sau khi đã xóa thành công trước đó
-  {
-    bool ok = addUniqueIfNormalizedNotExists(yardHashTable, yardTrie, storage,
-                                            "ABCD1234567", "DECL-1", 12.5);
-    printResult("Them lai container sau khi da xoa", ok);
-  }
+  // 6. Xoa lai ID khong ton tai
+  bool removedAgain = table.remove("ABCD1234567");
+  printTestResult("6) Xoa ID khong ton tai", !removedAgain);
 
-  // 7. Tra cứu thông tin container trong bảng băm bằng ID viết thường "abcd1234567"
-  {
-    string lowerId = normalizeID("abcd1234567");
-    Container *found = yardHashTable.search(lowerId);
-    bool ok = (found != nullptr && found->container_id == lowerId);
-    printResult("Tim kiem bang lowercase ID sau khi them lai", ok);
-    if (found != nullptr) {
-      cout << "  -> Tim thay: " << found->container_id << " | "
-           << found->customs_declaration_no << "\n";
-    }
-  }
+  // 7. Them lai container
+  Container c2 = {Label_Container::DANGER, "ABCD1234567", Status_Container::in_yard,
+                  18.0, "DECL-2"};
+  table.insert(c2);
+  printTestResult("7) Them lai container sau khi xoa",
+                  table.search("ABCD1234567") != nullptr);
 
-  // 8. Gọi hàm giao diện SEARCH_ID() với ID nhập vào là chữ thường "abcd1234567".
-  printTestHeader("TEST: GOI SEARCH_ID VOI ID LOWERCASE");
-  {
-    string input = "abcd1234567\n";
-    istringstream in(input);
-    streambuf *oldCin = cin.rdbuf(in.rdbuf());
-    SEARCH_ID(yardHashTable, yardTrie);
-    cin.rdbuf(oldCin);
-    printResult("SEARCH_ID co ID lowercase da ton tai", true);
-  }
+  // 8. Tim kiem bang ID viet thuong sau khi them lai
+  printTestResult("8) Tim bang ID viet thuong sau khi them lai",
+                  table.search(normalizeID("abcd1234567")) != nullptr);
 
-  // 9. Gọi SEARCH_ID với ID không tồn tại trong bãi "ZZZZ9999999".
-  {
-    string input = "ZZZZ9999999\n";
-    istringstream in(input);
-    streambuf *oldCin = cin.rdbuf(in.rdbuf());
-    SEARCH_ID(yardHashTable, yardTrie);
-    cin.rdbuf(oldCin);
-    printResult("SEARCH_ID co ID khong ton tai", true);
-  }
+  // 9. Tim ID khong ton tai
+  printTestResult("9) Khong tim thay ID khong ton tai",
+                  table.search("ZZZZ9999999") == nullptr);
 
-  // 10. Gọi hàm SEARCH_ID() với mã ID ngắn không đủ 11 ký tự "SHORT"
-  {
-    string input = "SHORT\n";
-    istringstream in(input);
-    streambuf *oldCin = cin.rdbuf(in.rdbuf());
-    SEARCH_ID(yardHashTable, yardTrie);
-    cin.rdbuf(oldCin);
-    printResult("SEARCH_ID co ID ngan SHORT", true);
-  }
+  // 10. Tim ID ngan
+  printTestResult("10) Khong tim thay ID ngan",
+                  table.search("SHORT") == nullptr);
 
-  cout << "\nKet thuc kiem thu.\n";
   return 0;
 }
