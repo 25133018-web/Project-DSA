@@ -12,7 +12,8 @@ struct Vessel
 { 
     list<Container>ContainerList; 
 };
-
+//Thao tác 1:Của Lê Anh Hào
+//================================Quản lý và gộp nhóm container===========================//
 //gom nhom bang dsu
 class DSU{
 	private: 
